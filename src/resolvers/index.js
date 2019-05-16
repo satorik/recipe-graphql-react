@@ -3,6 +3,7 @@ import Mutation from './Mutation'
 import User from './User'
 import {Recipe, RecipeContent} from './Recipe'
 import {Menu, MenuContent} from './Menu'
+import Subscription from './Subscription'
 
 const resolvers = {
   Query,
@@ -11,7 +12,8 @@ const resolvers = {
   Recipe,
   RecipeContent,
   Menu,
-  MenuContent
+  MenuContent,
+  Subscription
 }
 
 export {resolvers as default}

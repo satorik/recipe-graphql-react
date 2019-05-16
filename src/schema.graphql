@@ -18,6 +18,10 @@ type Mutation {
   deleteMenu(id: ID!): Menu!
 }
 
+type Subscription {
+  count: Int!
+}
+
 type Ingredient {
   id: ID!
   name: String!
