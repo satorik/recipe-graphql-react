@@ -1,3 +1,23 @@
+type Query {
+  ingredients: [Ingredient!]!
+  recipes: [Recipe!]!
+  users: [User!]!
+  menu: [Menu!]!
+}
+
+type Mutation {
+  createUser(data: CreateUserInput): User!
+  deleteUser(id: ID!): User!
+  updateUser(id: ID!, data: UpdateUserInput): User!
+  createRecipe(data: CreateRecipeInput): Recipe!
+  deleteRecipe(id: ID!): Recipe!
+  updateRecipe(id: ID!, data: UpdateRecipeInput) : Recipe!
+  updateRecipeContent(data: [UpdateRecipeInputContent]) : [RecipeContent!]
+  createIngredient(data: CreateIngredientInput): Ingredient!
+  createMenu(data: CreateMenuInput): Menu!
+  deleteMenu(id: ID!): Menu!
+}
+
 type Ingredient {
   id: ID!
   name: String!
@@ -70,27 +90,41 @@ type User {
   recipes: [Recipe!]!
 }
 
-type Query {
-  ingredients: [Ingredient!]!
-  recipes: [Recipe!]!
-  users: [User!]!
-  menu: [Menu!]!
+input CreateUserInput {
+  name: String!
+  email: String
 }
 
-input RecipeInputContent {
-  ingredient: String!
+input UpdateUserInput {
+  name: String
+  email: String
+}
+
+input CreateRecipeInputContent {
+  ingredient: ID!
   amount: Float!
 }
+input UpdateRecipeInputContent {
+  id: ID!
+  ingredient: ID
+  amount: Float
+}
 
-input RecipeInput {
+input CreateRecipeInput {
   title: String!
   desc: String
   rules: String!
   author: ID!
-  content: [RecipeInputContent!]!
+  content: [CreateRecipeInputContent!]
 }
 
-input IngredientInput {
+input UpdateRecipeInput {
+  title: String
+  desc: String
+  rules: String
+}
+
+input CreateIngredientInput {
   name: String!
   metrics: String!
   ccal: Int!
@@ -99,24 +133,14 @@ input IngredientInput {
   protein: Int!
 }
 
-input MenuContentInput {
+input CreateMenuContentInput {
   recipes: [ID!]!
   for: ID!
   type: String
 }
 
-input MenuInput {
+input CreateMenuInput {
   date: String!
   author: ID!
-  content: [MenuContentInput!]!
-}
-
-type Mutation {
-  createUser(name: String!, email: String): User!
-  deleteUser(id: ID!): User!
-  createRecipe(recipeInput: RecipeInput): Recipe!
-  deleteRecipe(id: ID!): Recipe!
-  createIngredient(ingredientInput: IngredientInput): Ingredient!
-  createMenu(menuInput: MenuInput): Menu!
-  deleteMenu(id: ID!): Menu!
+  content: [CreateMenuContentInput!]!
 }
