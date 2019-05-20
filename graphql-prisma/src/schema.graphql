@@ -1,0 +1,150 @@
+type Query {
+  ingredients: [Ingredient!]!
+  recipes(query: String): [Recipe!]!
+  users(query: String): [User!]!
+ # menu: [Menu!]!
+}
+
+type Mutation {
+  createUser(data: CreateUserInput): User!
+  deleteUser(id: ID!): User!
+  updateUser(id: ID!, data: UpdateUserInput): User!
+  createRecipe(data: CreateRecipeInput): Recipe!
+  deleteRecipe(id: ID!): Recipe!
+  updateRecipe(id: ID!, data: UpdateRecipeInput) : Recipe!
+  updateRecipeContent(data: [UpdateRecipeInputContent]) : [RecipeContent!]
+  createIngredient(data: CreateIngredientInput): Ingredient!
+  #createMenu(data: CreateMenuInput): Menu!
+  #deleteMenu(id: ID!): Menu!
+}
+
+type Subscription {
+  count: Int!
+}
+
+type Ingredient {
+  id: ID!
+  name: String!
+  metrics: String!
+  ccal: Int!
+  fat: Int!
+  carbon: Int!
+  protein: Int!
+}
+
+type Recipe {
+  id: ID!
+  title: String!
+  desc: String
+  rules: String!
+  author: User!
+  recipeContent: [RecipeContent!]!
+}
+
+type RecipeContent {
+  id: ID!
+  ingredient: Ingredient!
+  amount: Float!
+  recipe: Recipe!
+}
+
+# type Menu {
+#   id: ID!
+#   date: String!
+#   author: User!
+#   content: [MenuContent!]!
+# }
+
+# type MenuContent {
+#   id: ID!
+#   recipes: [Recipe!]!
+#   for: User!
+#   type: String
+#   menu: ID!
+# }
+
+# type Storage {
+#   id: ID!
+#   author: User!
+#   date: String!
+# }
+
+# type StorageContent {
+#   id: ID!
+#   ingredient: Ingredient!
+#   amount: Float!
+# }
+
+# type ShoppingList {
+#   id: ID!
+#   author: User!
+#   date: String!
+# }
+
+# type ShoppingListContent {
+#   id: ID!
+#   ingredient: Ingredient!
+#   amount: Float!
+# }
+
+type User {
+  id: ID!
+  name: String!
+  email: String
+  recipes: [Recipe!]
+}
+
+input CreateUserInput {
+  name: String!
+  email: String
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+}
+
+input CreateRecipeInputContent {
+  ingredient: ID!
+  amount: Float!
+}
+input UpdateRecipeInputContent {
+  id: ID!
+  ingredient: ID
+  amount: Float
+}
+
+input CreateRecipeInput {
+  title: String!
+  desc: String
+  rules: String!
+  author: ID!
+  content: [CreateRecipeInputContent!]
+}
+
+input UpdateRecipeInput {
+  title: String
+  desc: String
+  rules: String
+}
+
+input CreateIngredientInput {
+  name: String!
+  metrics: String!
+  ccal: Int!
+  fat: Int!
+  carbon: Int!
+  protein: Int!
+}
+
+# input CreateMenuContentInput {
+#   recipes: [ID!]!
+#   for: ID!
+#   type: String
+# }
+
+# input CreateMenuInput {
+#   date: String!
+#   author: ID!
+#   content: [CreateMenuContentInput!]!
+# }

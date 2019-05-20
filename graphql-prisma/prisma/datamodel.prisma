@@ -1,0 +1,103 @@
+type User {
+  id: ID! @id
+  name: String!
+  email: String! @unique
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  recipes: [Recipe!]! @relation(name:"UserToRecipe", onDelete: CASCADE)
+#  menus: [Menu!]! @relation(name:"UserToMenu", onDelete: CASCADE)
+#  storage: Storage @relation(name:"UserToStorage", onDelete: CASCADE)
+#  shoppinglists: [ShoppingList!]! @relation(name:"UserToShoppingList" onDelete: CASCADE)
+}
+
+type Ingredient {
+  id: ID! @id
+  name: String! @unique
+  metrics: String!
+  ccal: Int!
+  fat: Int!
+  carbon: Int!
+  protein: Int!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  recipeContents:[RecipeContent!] @relation(name:"IngredientToRecipeContent" onDelete: CASCADE)
+#  storage:Storage @relation(name:"IngredientToStorage" onDelete: SET_NULL)
+#  shoppingList:[ShoppingList!] @relation(name:"IngredientToShoppingList" onDelete: SET_NULL)
+}
+
+type Recipe {
+  id: ID! @id
+  title: String!
+  desc: String
+  rules: String!
+  author: User! @relation(name:"UserToRecipe")
+  recipeContent: [RecipeContent!]! @relation(name:"RecipeToContent" onDelete: CASCADE)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+#  menus: [Menu!] @relation(name:"RecipeToMenu" onDelete: SET_NULL)
+}
+
+type RecipeContent {
+  id: ID! @id 
+  ingredient: Ingredient! @relation(name:"IngredientToRecipeContent")
+  amount: Float!
+  recipe: Recipe @relation(name:"RecipeToContent")
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+# type Menu {
+#   id: ID! @id
+#   forDate: DateTime! @unique
+#   author: User! @relation(name:"UserToMenu")
+#   menuContent: [MenuContent!]! @relation(name:"MenuToMenuContent" onDelete: CASCADE)
+#   createdAt: DateTime! @createdAt
+#   updatedAt: DateTime! @updatedAt
+# }
+
+# type MenuContent {
+#   id: ID! @id
+#   recipes: [Recipe!]! @relation(name:"MenuContentToRecipe" onDelete: SET_NULL)
+#   for: User! @relation(name:"MenuContentToUser" onDelete: SET_NULL)
+#   type: String
+#   menu: Menu! @relation(name:"MenuToMenuContent")
+#   createdAt: DateTime! @createdAt
+#   updatedAt: DateTime! @updatedAt
+# }
+
+# type Storage {
+#   id:ID! @id
+#   author: User! @unique @relation(name:"StorageToUser", onDelete: SET_NULL)
+#   storageContent: [StorageContent!]! @relation(name:"StorageToStorageConetnt", onDelete: CASCADE)
+#   createdAt: DateTime! @createdAt
+#   updatedAt: DateTime! @updatedAt
+# }
+
+# type StorageContent {
+#   id: ID! @id
+#   ingredient: Ingredient! @unique @relation(name:"StorageContentToIngredient", onDelete: SET_NULL)
+#   amount: Float!
+#   storage: Storage! @relation(name:"StorageContentToStorage", onDelete: SET_NULL)
+# }
+
+# enum ShoppingListStatus {
+#   CREATED
+#   TODO
+#   FINISHED
+# }
+
+# type ShoppingList {
+#   id:ID! @id
+#   author: User! @relation(name:"ShoppingListToUser", onDelete: SET_NULL)
+#   status: ShoppingListStatus!
+#   shoppingListContent: [ShoppingListContent!]! @relation(name:"ShoppingListToShoppingListContent", onDelete: CASCADE)
+#   createdAt: DateTime! @createdAt
+#   updatedAt: DateTime! @updatedAt
+# }
+
+# type ShoppingListContent {
+#   id: ID! @id
+#   ingredient: Ingredient! @unique @relation(name:"ShoppingListConetentToIngredient", onDelete: SET_NULL)
+#   amount: Float!
+#   shoppingList: ShoppingList! @relation(name:"ShoppingListConetentToShoppingList", onDelete: SET_NULL)
+# }

@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "recipes-prisma": {
+      "schemaPath":"src/generated/prisma.graphql",
+      "extensions": {
+        "endpoints": {
+          "dev":{
+            "url":"https://recipe-graphql-6137fb7608.herokuapp.com/graphql-prisma/dev"
+          }
+        }
+      }
+    }
+  }
+}
