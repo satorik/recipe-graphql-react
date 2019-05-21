@@ -2,6 +2,7 @@ type User {
   id: ID! @id
   name: String!
   email: String! @unique
+  password: String!
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   recipes: [Recipe!]! @relation(name:"UserToRecipe", onDelete: CASCADE)
@@ -14,10 +15,10 @@ type Ingredient {
   id: ID! @id
   name: String! @unique
   metrics: String!
-  ccal: Int!
-  fat: Int!
-  carbon: Int!
-  protein: Int!
+  ccal: Int
+  fat: Int
+  carbon: Int
+  protein: Int
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   recipeContents:[RecipeContent!] @relation(name:"IngredientToRecipeContent" onDelete: CASCADE)

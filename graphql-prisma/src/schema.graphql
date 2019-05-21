@@ -12,7 +12,9 @@ type Mutation {
   createRecipe(data: CreateRecipeInput): Recipe!
   deleteRecipe(id: ID!): Recipe!
   updateRecipe(id: ID!, data: UpdateRecipeInput) : Recipe!
-  updateRecipeContent(data: [UpdateRecipeInputContent]) : [RecipeContent!]
+  updateRecipeContent(id: ID!, data: UpdateRecipeInputContent) : RecipeContent!
+  createRecipeContent(id: ID!, data: CreateRecipeInputContent) : RecipeContent!
+  deleteRecipeContent(id: ID!) : RecipeContent!
   createIngredient(data: CreateIngredientInput): Ingredient!
   #createMenu(data: CreateMenuInput): Menu!
   #deleteMenu(id: ID!): Menu!
@@ -91,12 +93,14 @@ type User {
   id: ID!
   name: String!
   email: String
+  password: String!
   recipes: [Recipe!]
 }
 
 input CreateUserInput {
   name: String!
-  email: String
+  email: String!
+  password: String!
 }
 
 input UpdateUserInput {
@@ -104,22 +108,22 @@ input UpdateUserInput {
   email: String
 }
 
-input CreateRecipeInputContent {
-  ingredient: ID!
-  amount: Float!
-}
-input UpdateRecipeInputContent {
-  id: ID!
-  ingredient: ID
-  amount: Float
-}
-
 input CreateRecipeInput {
   title: String!
   desc: String
   rules: String!
   author: ID!
-  content: [CreateRecipeInputContent!]
+  recipeContent: [CreateRecipeInputContent!]!
+}
+
+input UpdateRecipeInputContent {
+  ingredient: ID
+  amount: Float
+}
+
+input CreateRecipeInputContent {
+  ingredient: ID!
+  amount: Float!
 }
 
 input UpdateRecipeInput {
@@ -131,10 +135,10 @@ input UpdateRecipeInput {
 input CreateIngredientInput {
   name: String!
   metrics: String!
-  ccal: Int!
-  fat: Int!
-  carbon: Int!
-  protein: Int!
+  ccal: Int
+  fat: Int
+  carbon: Int
+  protein: Int
 }
 
 # input CreateMenuContentInput {
