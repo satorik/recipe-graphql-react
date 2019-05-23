@@ -1,33 +1,60 @@
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import getUserId from '../utils/getUserId'
+import token from '../utils/getToken'
+import hashPassword from '../utils/hashPassword'
 
 const Mutation = {
-  async createUser(parent, {data}, {prisma}, info) {
-    if (data.password.length < 6) {
-      throw new Error('Password must be 6 characters or longer')
+  async login(parent, {email, password}, {prisma}, info) {
+    if (typeof email !== 'string' || password.length < 6) {
+      throw new Error('Wrong credentials')
     }
 
-    const password = await bcrypt.hash(data.password, 12)
+    const user = await prisma.query.user({where:{email}})
+    if (!user) {
+      throw new Error('No User!')
+    }
 
-    return prisma.mutation.createUser({
-      data: {
-        ...data,
-        password
-      }
-    }, info)
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if (!isMatch) {
+      throw new Error('Wrong password')
+    }
+
+    return {user, token: token(user.id)}
+  },
+  async createUser(parent, {data}, {prisma}, info) {
+
+    const password = await hashPassword(data.password)
+
+    const user = await prisma.mutation.createUser({
+        data: { 
+          ...data,
+          password
+        }
+      })
+    
+    return {user, token: token(user.id) }
   },
 
-  async deleteUser(parent, {id}, {prisma}, info) {
+  async deleteUser(parent, args, {prisma}, info) {
+
+    const id = getUserId(req)
 
     const user = await prisma.exists.User({id})
     if (!user) {
       throw new Error('No User!')
     }
 
-    return prisma.mutation.deleteUser({where: {id}}, info)
+    return await prisma.mutation.deleteUser({where: {id}}, info)
 
   },
-  async updateUser(parent, {id, data}, {prisma}, info) {
+  async updateUser(parent, {data}, {prisma, req}, info) {
+
+    if (typeof data.password === 'string') {
+      data.password = await hashPassword(data.password)
+    }
+
+    const id = getUserId(req)
 
     return prisma.mutation.updateUser({
       where: {id},
@@ -35,14 +62,14 @@ const Mutation = {
     }, info)
   },
 
-  createRecipe(parent, {data}, {prisma}, info) {
-    const {recipeContent, author, ...recipeData} = data
+  createRecipe(parent, {data}, {prisma, req}, info) {
+    const id = getUserId(req)
+
+    const {recipeContent, ...recipeData} = data
 
     const recipeInputData = {
       author: {
-        connect: {
-          id: author
-        }
+        connect: {id}
       },
       ...recipeData,
       recipeContent: {
@@ -63,18 +90,40 @@ const Mutation = {
 
   },
 
-  updateRecipe(parent, {id, data}, {prisma}, info) {
+  async updateRecipe(parent, {id, data}, {prisma, req}, info) {
+    const userId = getUserId(req)
+    const recipeExists = await prisma.exists.Recipe({
+      id,
+      author: {
+        id: userId
+      }
+    })
+
+    if (!recipeExists) {
+      throw new Error('No such recipe for this user')
+    }
 
     return prisma.mutation.updateRecipe({
-      where: {
-        id: id
-      },
-      data: data
+      where: {id},
+      data
     }, info)
 
   },
 
-  updateRecipeContent(parent, {id, data}, {prisma}, info) {
+  async updateRecipeContent(parent, {id, data}, {prisma, req}, info) {
+
+    const userId = getUserId(req)
+    const recipeExists = await prisma.exists.Recipe({
+      author: {
+        id: userId
+      },
+      recipeContent_some: {id}
+    })
+
+    if (!recipeExists) {
+      throw new Error('No such recipe for this user')
+    }
+    //if ingredient id is not provided mutation fails. Add logic to update only amount
 
     return prisma.mutation.updateRecipeContent({
       where: {
@@ -92,7 +141,19 @@ const Mutation = {
 
   },
 
-  createRecipeContent(parent, {id, data}, {prisma}, info) {
+  async createRecipeContent(parent, {id, data}, {prisma, req}, info) {
+
+    const userId = getUserId(req)
+    const recipeExists = await prisma.exists.Recipe({
+      id,
+      author: {
+        id: userId
+      }
+    })
+
+    if (!recipeExists) {
+      throw new Error('No such recipe for this user')
+    }
 
     return prisma.mutation.createRecipeContent({
       data: {
@@ -111,7 +172,18 @@ const Mutation = {
     }, info)
   },
 
-  deleteRecipeContent(parent, {id}, {prisma}, info) {
+  async deleteRecipeContent(parent, {id}, {prisma, req}, info) {
+    const userId = getUserId(req)
+    const recipeExists = await prisma.exists.Recipe({
+      author: {
+        id: userId
+      },
+      recipeContent_some: {id}
+    })
+
+    if (!recipeExists) {
+      throw new Error('No such recipe for this user')
+    }
 
     return prisma.mutation.deleteRecipeContent({
       where: {
@@ -120,12 +192,27 @@ const Mutation = {
     }, info)
 
   },
-  deleteRecipe(parent, {id}, {prisma}, info) {
+  async deleteRecipe(parent, {id}, {prisma, req}, info) {
+
+    const userId = getUserId(req)
+    const recipeExists = await prisma.exists.Recipe({
+      id,
+      author: {
+        id: userId
+      }
+    })
+
+    if (!recipeExists) {
+      throw new Error('No such recipe for this user')
+    }
 
     return prisma.mutation.deleteRecipe({where: {id: id}}, info)
 
   },
-  createIngredient(parent, {data}, {prisma}, info) {
+  createIngredient(parent, {data}, {prisma, req}, info) {
+
+    const id = getUserId(req)
+    
     return prisma.mutation.createIngredient({data: data}, info)
   }
 }

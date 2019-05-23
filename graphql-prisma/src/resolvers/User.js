@@ -1,8 +1,22 @@
-const User = {
-  recipes(parent, args, {prisma}, info) {
-    const opArgs = {}
+import getUserId from '../utils/getUserId'
 
-    return prisma.query.recipes(opArgs, info)
+const User = {
+  email:{
+    fragment: 'fragment userId on User { id }',
+    resolve(parent, args, {req}, info) {
+      const userId = getUserId(req, false)
+  
+      if (userId && userId === parent.id) {
+        return parent.email
+      }
+      
+      return null
+    }
+  },
+  password: {
+    resolve(parent, args, ctx, info) {
+      return null
+    }
   }
 }
 

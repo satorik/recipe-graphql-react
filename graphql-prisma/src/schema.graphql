@@ -1,14 +1,18 @@
 type Query {
   ingredients: [Ingredient!]!
-  recipes(query: String): [Recipe!]!
+  recipes(query: String, ingId: ID): [Recipe!]!
+  myRecipes:[Recipe!]!
   users(query: String): [User!]!
+  recipe(id: ID!): Recipe!
+  me: User!
  # menu: [Menu!]!
 }
 
 type Mutation {
-  createUser(data: CreateUserInput): User!
-  deleteUser(id: ID!): User!
-  updateUser(id: ID!, data: UpdateUserInput): User!
+  login(email: String!, password: String!): AuthPayload!
+  createUser(data: CreateUserInput): AuthPayload!
+  deleteUser: User!
+  updateUser(data: UpdateUserInput): User!
   createRecipe(data: CreateRecipeInput): Recipe!
   deleteRecipe(id: ID!): Recipe!
   updateRecipe(id: ID!, data: UpdateRecipeInput) : Recipe!
@@ -88,12 +92,16 @@ type RecipeContent {
 #   ingredient: Ingredient!
 #   amount: Float!
 # }
+type AuthPayload {
+  token: String!
+  user: User!
+}
 
 type User {
   id: ID!
   name: String!
   email: String
-  password: String!
+  password: String
   recipes: [Recipe!]
 }
 
@@ -106,13 +114,13 @@ input CreateUserInput {
 input UpdateUserInput {
   name: String
   email: String
+  password: String
 }
 
 input CreateRecipeInput {
   title: String!
   desc: String
   rules: String!
-  author: ID!
   recipeContent: [CreateRecipeInputContent!]!
 }
 
