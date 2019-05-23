@@ -1,8 +1,10 @@
+# import UserOrderByInput, RecipeOrderByInput, IngredientOrderByInput from './generated/prisma.graphql'
+
 type Query {
-  ingredients: [Ingredient!]!
-  recipes(query: String, ingId: ID): [Recipe!]!
-  myRecipes:[Recipe!]!
-  users(query: String): [User!]!
+  ingredients(first: Int, skip: Int, after: String, orderBy: IngredientOrderByInput): [Ingredient!]!
+  recipes(query: String, ingId: ID, first: Int, skip: Int, after: String, orderBy: RecipeOrderByInput): [Recipe!]!
+  myRecipes(first: Int, skip: Int, after: String, orderBy: RecipeOrderByInput):[Recipe!]!
+  users(query: String, first: Int, skip: Int, after: String, orderBy: UserOrderByInput): [User!]!
   recipe(id: ID!): Recipe!
   me: User!
  # menu: [Menu!]!
@@ -36,6 +38,8 @@ type Ingredient {
   fat: Int!
   carbon: Int!
   protein: Int!
+  updatedAt: String!
+  createdAt: String!
 }
 
 type Recipe {
@@ -45,6 +49,8 @@ type Recipe {
   rules: String!
   author: User!
   recipeContent: [RecipeContent!]!
+  updatedAt: String!
+  createdAt: String!
 }
 
 type RecipeContent {
@@ -103,6 +109,8 @@ type User {
   email: String
   password: String
   recipes: [Recipe!]
+  updatedAt: String!
+  createdAt: String!
 }
 
 input CreateUserInput {

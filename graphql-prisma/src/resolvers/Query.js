@@ -1,9 +1,14 @@
 import getUserId from '../utils/getUserId'
 
 const Query = {
-  recipes(parent, {query, ingId}, {prisma}, info) {
+  recipes(parent, {query, ingId, first, skip, after, orderBy}, {prisma}, info) {
     const OR = []
-    let opArgs = {}
+    const opArgs = {
+      first,
+      skip,
+      after,
+      orderBy
+    }
 
     if (ingId) {
      const ingWhere = {recipeContent_some:{ingredient:{id: ingId}}}
@@ -19,27 +24,48 @@ const Query = {
         OR.push(...queryWhere)
     }
 
-    if( query || ingId) { opArgs = {where: {OR}}}
+    if( query || ingId) { opArgs.where = {OR}}
 
    return prisma.query.recipes(opArgs, info)
   },
 
-  myRecipes(parent, args, {prisma, req}, info){
+  myRecipes(parent, {first, skip, after, orderBy}, {prisma, req}, info){
     const id = getUserId(req)
 
-    return prisma.query.recipes({where:{author:{id}}}, info)
+    const opArgs = {
+      first,
+      skip,
+      after,
+      orderBy,
+      where: {author: {id}}
+    }
+
+    return prisma.query.recipes(opArgs, info)
   },
-  ingredients(parent, args, {prisma}, info) {
-    return prisma.query.ingredients(null, info)
+  ingredients(parent, {first, skip, after, orderBy}, {prisma}, info) {
+
+    const opArgs = {
+      first,
+      skip,
+      after,
+      orderBy
+    }
+
+    return prisma.query.ingredients(opArgs, info)
   },
 
-  users(parent, args, {prisma}, info) {
-    const opArgs = {}
+  users(parent, {query, first, skip, after, orderBy}, {prisma}, info) {
+    const opArgs = {
+      first,
+      skip,
+      after,
+      orderBy
+    }
 
-    if (args.query) {
+    if (query) {
       opArgs.where = {
         OR: [{
-          name_contains: args.query
+          name_contains: query
         }]
 
       }
